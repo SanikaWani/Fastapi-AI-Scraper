@@ -21,6 +21,7 @@ templates_path = Path(__file__).parent / "templates"
 # GET endpoint to render the HTML form
 @app.get("/", response_class=HTMLResponse)
 async def get_form(request: Request):
+    print(os.getcwd())
     authenticated = is_authenticated(request)  # Check if user is authenticated
     index_file = templates_path / "index.html"
     return HTMLResponse(content=index_file.read_text(), status_code=200)
