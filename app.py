@@ -6,6 +6,7 @@ from auth import is_authenticated, login_user, logout_user, authenticate_key
 from scraping import scrape_homepage
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
