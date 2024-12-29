@@ -6,7 +6,6 @@ from auth import is_authenticated, login_user, logout_user, authenticate_key
 from scraping import scrape_homepage
 import os
 from dotenv import load_dotenv
-from pathlib import Path
 
 load_dotenv()
 
@@ -16,21 +15,17 @@ app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=os.getenv('SECRET_KEY'))
 
 templates = Jinja2Templates(directory="templates")
-templates_path = Path(__file__).parent / "templates"
 
 # GET endpoint to render the HTML form
 @app.get("/", response_class=HTMLResponse)
 async def get_form(request: Request):
-    print(os.getcwd())
     authenticated = is_authenticated(request)  # Check if user is authenticated
-    index_file = templates_path / "index.html"
-    return HTMLResponse(content=index_file.read_text(), status_code=200)
-    # return templates.TemplateResponse("index.html", {
-    #     "request": request,
-    #     "authenticated": authenticated,
-    #     "message": "Please authenticate first." if not authenticated else None,
-    #     "result": None
-    # })
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "authenticated": authenticated,
+        "message": "Please authenticate first." if not authenticated else None,
+        "result": None
+    })
 
 # POST endpoint to authenticate using secret key
 @app.post("/authenticate", response_class=HTMLResponse)
@@ -38,8 +33,6 @@ async def authenticate(request: Request, secret_key: str = Form(...)):
     try:
         authenticate_key(secret_key)  # This function checks the secret key
         login_user(request)  # Mark the user as authenticated
-    #     index_file = templates_path / "index.html"
-    # return HTMLResponse(content=index_file.read_text(), status_code=200)
         return templates.TemplateResponse("index.html", {
             "request": request,
             "authenticated": True,  # User is now authenticated
