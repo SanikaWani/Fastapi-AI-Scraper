@@ -49,7 +49,7 @@ pip install -r requirements.txt
 Create a `.env` file in the root directory and add the following:
 
 ```
-SECRET_KEY=your_secret_key_here
+SECRET_KEY=204e491cbda14903828755b02ba4b4e1
 ```
 
 ---
