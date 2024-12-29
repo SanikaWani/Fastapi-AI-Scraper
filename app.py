@@ -15,6 +15,7 @@ app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=os.getenv('SECRET_KEY'))
 
 templates = Jinja2Templates(directory="templates")
+templates_path = Path(__file__).parent / "templates"
 
 # GET endpoint to render the HTML form
 @app.get("/", response_class=HTMLResponse)
@@ -33,12 +34,14 @@ async def authenticate(request: Request, secret_key: str = Form(...)):
     try:
         authenticate_key(secret_key)  # This function checks the secret key
         login_user(request)  # Mark the user as authenticated
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "authenticated": True,  # User is now authenticated
-            "message": "Authentication successful!",
-            "result": None
-        })
+        index_file = templates_path / "index.html"
+    return HTMLResponse(content=index_file.read_text(), status_code=200)
+        # return templates.TemplateResponse("index.html", {
+        #     "request": request,
+        #     "authenticated": True,  # User is now authenticated
+        #     "message": "Authentication successful!",
+        #     "result": None
+        # })
     except HTTPException as e:
         # Pass the exception to the response to handle 401 Unauthorized
         raise e
