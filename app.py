@@ -21,12 +21,14 @@ templates_path = Path(__file__).parent / "templates"
 @app.get("/", response_class=HTMLResponse)
 async def get_form(request: Request):
     authenticated = is_authenticated(request)  # Check if user is authenticated
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "authenticated": authenticated,
-        "message": "Please authenticate first." if not authenticated else None,
-        "result": None
-    })
+    index_file = templates_path / "index.html"
+    return HTMLResponse(content=index_file.read_text(), status_code=200)
+    # return templates.TemplateResponse("index.html", {
+    #     "request": request,
+    #     "authenticated": authenticated,
+    #     "message": "Please authenticate first." if not authenticated else None,
+    #     "result": None
+    # })
 
 # POST endpoint to authenticate using secret key
 @app.post("/authenticate", response_class=HTMLResponse)
@@ -34,14 +36,14 @@ async def authenticate(request: Request, secret_key: str = Form(...)):
     try:
         authenticate_key(secret_key)  # This function checks the secret key
         login_user(request)  # Mark the user as authenticated
-        index_file = templates_path / "index.html"
-    return HTMLResponse(content=index_file.read_text(), status_code=200)
-        # return templates.TemplateResponse("index.html", {
-        #     "request": request,
-        #     "authenticated": True,  # User is now authenticated
-        #     "message": "Authentication successful!",
-        #     "result": None
-        # })
+    #     index_file = templates_path / "index.html"
+    # return HTMLResponse(content=index_file.read_text(), status_code=200)
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "authenticated": True,  # User is now authenticated
+            "message": "Authentication successful!",
+            "result": None
+        })
     except HTTPException as e:
         # Pass the exception to the response to handle 401 Unauthorized
         raise e
