@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Scraper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background-color: #ff6b6b;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        header a:hover {
+            background-color: #e63946;
+        }
+        main {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="url"], input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #455da0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body onload="clearInputs()">
+
+    <header>
+        <h1>Website Scraper</h1>
+        {% if authenticated %}
+        <a href="/logout">Logout</a>
+        {% endif %}
+    </header>
+
+    <main>
+        <!-- Authentication form -->
+        <div id="auth-form" {% if authenticated %}style="display: none;"{% endif %}>
+            <h2>Enter Secret Key</h2>
+            <form action="/authenticate" method="post">
+                <input type="text" name="secret_key" id="secret_key" placeholder="Enter Secret Key" required>
+                <button type="submit">Authenticate</button>
+            </form>
+        </div>
+
+        <!-- Scrape form (only visible after authentication) -->
+        <div id="scrape-form" {% if not authenticated %}style="display: none;"{% endif %}>
+            <form action="/scrape" method="post">
+                <label for="url">Enter Website URL:</label><br>
+                <input type="url" id="url" name="url" required><br>
+                <button type="submit">Scrape Website</button>
+            </form>
+
+            {% if message %}
+            <div class="result {% if 'Error' in message %}error{% else %}success{% endif %}">
+                <strong>{{ message }}</strong>
+            </div>
+            {% endif %}
+
+            {% if result %}
+            <div class="result">
+                <h3>Scraped Data:</h3>
+                <ul>
+                    <li><strong>Industry:</strong> {{ result.industry }}</li>
+                    <li><strong>Company Size:</strong> {{ result.company_size }}</li>
+                    <li><strong>Location:</strong> {{ result.location }}</li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2024 Website Scraper Application. All rights reserved.
+    </footer>
+
+    <script>
+        // Clear input fields on page load
+        function clearInputs() {
+            const inputs = document.querySelectorAll('input[type="text"], input[type="url"]');
+            inputs.forEach(input => input.value = "");
+        }
+
+        // Toggle visibility of forms based on authentication status
+        {% if authenticated %}
+        document.getElementById('auth-form').style.display = 'none';
+        document.getElementById('scrape-form').style.display = 'block';
+        {% else %}
+        document.getElementById('auth-form').style.display = 'block';
+        document.getElementById('scrape-form').style.display = 'none';
+        {% endif %}
+    </script>
+
+</body>
+</html>
